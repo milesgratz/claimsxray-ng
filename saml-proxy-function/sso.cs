@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Host;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -16,15 +17,24 @@ namespace saml_proxy_function
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
+            string SAML_REDIRECT_URL = System.Environment.GetEnvironmentVariable("SAML_REDIRECT_URL");
+            if (string.IsNullOrEmpty(SAML_REDIRECT_URL))
+            {
+                log.LogError("The app setting SAML_REDIRECT_URL was not configured.");
+                return new StatusCodeResult(500);
+            }
+
             var samlResponse = req.Form["samlResponse"];
             if (samlResponse.Count > 0)
-                return new RedirectResult($"{req.Scheme}://{req.Host}/token?samlResponse={HttpUtility.UrlEncode(samlResponse[0])}");
+                return new RedirectResult($"{SAML_REDIRECT_URL}?samlResponse={HttpUtility.UrlEncode(samlResponse[0])}");
 
             var wsfedResponse = req.Form["wresult"];
             if (wsfedResponse.Count > 0)
-                return new RedirectResult($"{req.Scheme}://{req.Host}/token?wresult={HttpUtility.UrlEncode(wsfedResponse[0])}");
+                return new RedirectResult($"{SAML_REDIRECT_URL}?wresult={HttpUtility.UrlEncode(wsfedResponse[0])}");
 
-            return new RedirectResult($"{req.Scheme}://{req.Host}?error={":P"}");
+            log.LogWarning("The request does not have the required attributes.");
+            return new BadRequestResult();
+            //return new RedirectResult($"{SAML_REDIRECT_URL}?error={":P"}");
         }
     }
 }
