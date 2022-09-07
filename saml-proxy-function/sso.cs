@@ -1,12 +1,11 @@
-using System;
-using System.IO;
+
+using System.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace saml_proxy_function
 {
@@ -14,22 +13,15 @@ namespace saml_proxy_function
     {
         [FunctionName("sso")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            var samlResponse = req.Form["samlResponse"];
 
-            string name = req.Query["name"];
+            if (samlResponse.Count > 0)
+                return new RedirectResult($"{req.Scheme}://{req.Host}/token?samlResponse={HttpUtility.UrlEncode(samlResponse[0])}");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+            return new RedirectResult($"{req.Scheme}://{req.Host}?error={":P"}");
         }
     }
 }
