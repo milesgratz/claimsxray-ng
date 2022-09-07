@@ -26,6 +26,8 @@ export class TokenParserService {
     let rawToken: string[] = [];
     if (type == TokenType.Saml)
       rawToken.push(atob(token));
+    else if (type == TokenType.WsFed)
+      rawToken.push(token);
     else {
       let jwtTokenSplit = token.split('.');
       rawToken.push(this.base64UrlDecode(jwtTokenSplit[0]));
@@ -91,15 +93,15 @@ export class TokenParserService {
           if (!err) {
             //console.log(result);
             // parse issuer
-            value.issuer = result['SAMLP:RESPONSE'].ISSUER[0]['_'];
+            value.issuer = result['T:REQUESTSECURITYTOKENRESPONSE']['T:REQUESTEDSECURITYTOKEN'][0].ASSERTION[0].ISSUER[0];
 
             // parse conditions
-            value.audience = result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].AUDIENCERESTRICTION[0].AUDIENCE[0];
-            value.validFrom = new Date(result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].$.NOTBEFORE);
-            value.validTo = new Date(result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].$.NOTONORAFTER);
+            value.audience = result['T:REQUESTSECURITYTOKENRESPONSE']['T:REQUESTEDSECURITYTOKEN'][0].ASSERTION[0].CONDITIONS[0].AUDIENCERESTRICTION[0].AUDIENCE[0];
+            value.validFrom = new Date(result['T:REQUESTSECURITYTOKENRESPONSE']['T:REQUESTEDSECURITYTOKEN'][0].ASSERTION[0].CONDITIONS[0].$.NOTBEFORE);
+            value.validTo = new Date(result['T:REQUESTSECURITYTOKENRESPONSE']['T:REQUESTEDSECURITYTOKEN'][0].ASSERTION[0].CONDITIONS[0].$.NOTONORAFTER);
 
             // parse claims
-            result['SAMLP:RESPONSE'].ASSERTION[0].ATTRIBUTESTATEMENT[0].ATTRIBUTE.forEach((attr: any) => {
+            result['T:REQUESTSECURITYTOKENRESPONSE']['T:REQUESTEDSECURITYTOKEN'][0].ASSERTION[0].ATTRIBUTESTATEMENT[0].ATTRIBUTE.forEach((attr: any) => {
               let claim: Claim = {
                 type: attr.$.NAME,
                 value: attr.ATTRIBUTEVALUE[0]
