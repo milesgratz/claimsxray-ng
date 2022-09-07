@@ -6,6 +6,7 @@ export class TokenRequest {
     tokenUrl: string;
     codeVerifier: string;
     replyHost: string;
+    replyHostProxy: string;
     replyPath: string;
   
     constructor() {
@@ -16,6 +17,7 @@ export class TokenRequest {
       this.tokenUrl = '';
       this.codeVerifier = '';
       this.replyHost = '';
+      this.replyHostProxy = '';
       this.replyPath = '';
     }
   }

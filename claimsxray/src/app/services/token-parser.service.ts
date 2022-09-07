@@ -1,0 +1,163 @@
+import { Injectable, Inject } from '@angular/core';
+
+import * as xml2js from 'xml2js';
+import { TokenType } from '../models/app-enums';
+import { Claim } from '../models/claim';
+
+import { ParsedToken } from '../models/parsed-token';
+import { TokenRequest } from '../models/token-request';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TokenParserService {
+
+  tokens: ParsedToken[] = [];
+  replyHost: string = '';
+  replyHostProxy: string = '';
+
+  constructor() {
+    this.replyHost = `${window.location.origin}/`;
+    this.replyHostProxy = 'http://localhost:7071/';
+  }
+
+  addRawToken(type: TokenType, token: string) {
+
+    let rawToken: string[] = [];
+    if (type == TokenType.Saml)
+      rawToken.push(atob(token));
+    else {
+      let jwtTokenSplit = token.split('.');
+      rawToken.push(this.base64UrlDecode(jwtTokenSplit[0]));
+      rawToken.push(this.base64UrlDecode(jwtTokenSplit[1]));
+      rawToken.push(jwtTokenSplit[2]);
+    }
+
+    this.tokens.push({
+      type: type,
+      issuer: '',
+      audience: '',
+      validFrom: new Date(0),
+      validTo: new Date(0),
+      claims: [],
+      rawToken: rawToken
+    });
+
+    this.parseTokens();
+  }
+
+  clearToken() {
+    this.tokens = [];
+  }
+
+  parseTokens() {
+
+    this.tokens.forEach(value => {
+
+      // SAML token
+      if (value.type == TokenType.Saml) {
+        // convert raw token to JSON
+        const parser = new xml2js.Parser({ strict: false, trim: true });
+        parser.parseString(value.rawToken, (err, result) => {
+          if (!err) {
+            //console.log(result);
+            // parse issuer
+            value.issuer = result['SAMLP:RESPONSE'].ISSUER[0]['_'];
+
+            // parse conditions
+            value.audience = result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].AUDIENCERESTRICTION[0].AUDIENCE[0];
+            value.validFrom = new Date(result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].$.NOTBEFORE);
+            value.validTo = new Date(result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].$.NOTONORAFTER);
+
+            // parse claims
+            result['SAMLP:RESPONSE'].ASSERTION[0].ATTRIBUTESTATEMENT[0].ATTRIBUTE.forEach((attr: any) => {
+              let claim: Claim = {
+                type: attr.$.NAME,
+                value: attr.ATTRIBUTEVALUE[0]
+              };
+              value.claims.push(claim);
+            });
+          }
+          else {
+            console.log(err);
+          }
+        });
+      }
+      // WS-Fed token
+      else if (value.type == TokenType.WsFed) {
+        // convert raw token to JSON
+        const parser = new xml2js.Parser({ strict: false, trim: true });
+        parser.parseString(value.rawToken, (err, result) => {
+          if (!err) {
+            //console.log(result);
+            // parse issuer
+            value.issuer = result['SAMLP:RESPONSE'].ISSUER[0]['_'];
+
+            // parse conditions
+            value.audience = result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].AUDIENCERESTRICTION[0].AUDIENCE[0];
+            value.validFrom = new Date(result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].$.NOTBEFORE);
+            value.validTo = new Date(result['SAMLP:RESPONSE'].ASSERTION[0].CONDITIONS[0].$.NOTONORAFTER);
+
+            // parse claims
+            result['SAMLP:RESPONSE'].ASSERTION[0].ATTRIBUTESTATEMENT[0].ATTRIBUTE.forEach((attr: any) => {
+              let claim: Claim = {
+                type: attr.$.NAME,
+                value: attr.ATTRIBUTEVALUE[0]
+              };
+              value.claims.push(claim);
+            });
+          }
+          else {
+            console.log(err);
+          }
+        });
+      }
+      // OIDC/OAuth2 tokens
+      else {//if (value.type == TokenType.Id) {
+        let payload = JSON.parse(value.rawToken[1]);
+
+        // issuer
+        value.issuer = payload.iss;
+
+        // conditions
+        value.audience = payload.aud;
+        value.validFrom = new Date(payload.nbf);
+        value.validTo = new Date(payload.exp);
+
+        // claims
+        Object.keys(payload).forEach(key => {
+          let claim: Claim = {
+            type: key,
+            value: payload[key]
+          };
+          value.claims.push(claim);
+        });
+
+      }
+    });
+  }
+
+
+  getTokenRequest(): TokenRequest {
+    let request = localStorage.getItem('lastTokenRequest');
+    if (request)
+      return JSON.parse(request);
+
+    let empty = new TokenRequest();
+    empty.replyHost = this.replyHost;
+    empty.replyHostProxy = this.replyHostProxy;
+    return empty;
+  }
+  setTokenRequest(request: TokenRequest) {
+    localStorage.setItem('lastTokenRequest', JSON.stringify(request));
+  }
+  removeTokenRequest() {
+    localStorage.removeItem('lastTokenRequest');
+  }
+
+  base64UrlDecode(data: string) {
+    let s = data.replace(/\-/g, '+').replace(/\_/g, '/');
+    //s = s.split('=')[0].replace(/\+/g, '-').replace(/\//g, '_');
+    return atob(s);
+  }
+}
