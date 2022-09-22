@@ -25,13 +25,13 @@ export class TokenParserService {
 
     let rawToken: string[] = [];
     if (type == TokenType.Saml)
-      rawToken.push(atob(token));
+      rawToken.push(this.prettifyXml(atob(token)));
     else if (type == TokenType.WsFed)
-      rawToken.push(token);
+      rawToken.push(this.prettifyXml(token));
     else {
       let jwtTokenSplit = token.split('.');
-      rawToken.push(this.base64UrlDecode(jwtTokenSplit[0]));
-      rawToken.push(this.base64UrlDecode(jwtTokenSplit[1]));
+      rawToken.push(this.prettifyJson(this.base64UrlDecode(jwtTokenSplit[0])));
+      rawToken.push(this.prettifyJson(this.base64UrlDecode(jwtTokenSplit[1])));
       rawToken.push(jwtTokenSplit[2]);
     }
 
@@ -141,7 +141,7 @@ export class TokenParserService {
 
 
   getTokenRequest(): TokenRequest {
-    let request = localStorage.getItem('lastTokenRequest');
+    let request = sessionStorage.getItem('lastTokenRequest');
     if (request)
       return JSON.parse(request);
 
@@ -151,15 +151,30 @@ export class TokenParserService {
     return empty;
   }
   setTokenRequest(request: TokenRequest) {
-    localStorage.setItem('lastTokenRequest', JSON.stringify(request));
+    sessionStorage.setItem('lastTokenRequest', JSON.stringify(request));
   }
   removeTokenRequest() {
-    localStorage.removeItem('lastTokenRequest');
+    sessionStorage.removeItem('lastTokenRequest');
   }
 
   base64UrlDecode(data: string) {
     let s = data.replace(/\-/g, '+').replace(/\_/g, '/');
     //s = s.split('=')[0].replace(/\+/g, '-').replace(/\//g, '_');
     return atob(s);
+  }
+
+  prettifyXml(text: string, tab: string = '\t') {
+    var formatted = '', indent= '';
+    text.split(/>\s*</).forEach(function(node) {
+        if (node.match( /^\/\w/ )) indent = indent.substring(tab.length); // decrease indent by one 'tab'
+        formatted += indent + '<' + node + '>\r\n';
+        if (node.match( /^<?\w[^>]*[^\/]$/ )) indent += tab;              // increase indent
+    });
+    return formatted.substring(1, formatted.length-3);
+  }
+
+  prettifyJson(text: string, tab: string = '\t') {
+    var jsonobj = JSON.parse(text);
+    return JSON.stringify(jsonobj,null,'\t')
   }
 }
