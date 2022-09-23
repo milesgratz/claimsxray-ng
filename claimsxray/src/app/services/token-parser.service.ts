@@ -123,8 +123,8 @@ export class TokenParserService {
 
         // conditions
         value.audience = payload.aud;
-        value.validFrom = new Date(payload.nbf);
-        value.validTo = new Date(payload.exp);
+        value.validFrom = new Date(payload.nbf * 1000);
+        value.validTo = new Date(payload.exp * 1000);
 
         // claims
         Object.keys(payload).forEach(key => {
