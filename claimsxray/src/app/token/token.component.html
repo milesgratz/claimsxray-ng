@@ -1,0 +1,61 @@
+<section class="page-section"  *ngFor="let token of tokens" id="token">
+    <div class="container">
+      <!-- Token Result Section Heading-->
+      <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">{{token.type == 2 ? 'ID ' : (token.type == 3 ? 'Access ' : '')}}Token details</h2>
+      <!-- Icon Divider-->
+      <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="divider-custom-icon"><i class="fas fa-skull"></i></div>
+        <div class="divider-custom-line"></div>
+      </div>
+
+      <!-- Token Request Section Form-->
+      <div class="container text-center">
+
+        <div class="token-details">
+            <div class="card">
+                <h3 class="card-header">Information</h3>
+                <div class="card-body">
+                    <h5 class="card-title">Issuer</h5>
+                    <p class="card-text">{{token.issuer}}</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Audience</h5>
+                    <p class="card-text">{{token.audience}}</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Valid from</h5>
+                    <p class="card-text">{{token.validFrom}}</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Valid to</h5>
+                    <p class="card-text">{{token.validTo}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="token-details">
+            <div class="card">
+                <h3 class="card-header">Claims</h3>
+                <div class="card-body" *ngFor="let claim of token.claims">
+                    <h5 class="card-title">{{claim.type}}</h5>
+                    <p class="card-text">{{claim.value}}
+                </div>
+            </div>
+        </div>
+
+        <div class="token-details">
+            <div class="card details-card">
+                <h3 class="card-header">Raw Token</h3>
+                <div class="card-body">
+                    <div class="col">
+                        <pre tabindex="0" class="xml" >
+                            <code>{{token.rawToken}}</code>
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</section>

@@ -1,0 +1,48 @@
+<section class="page-section" id="token">
+    <div class="container">
+      <!-- Token Request Section Heading-->
+      <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Request Token</h2>
+      <!-- Icon Divider-->
+      <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="divider-custom-icon"><i class="fas fa-skull"></i></div>
+        <div class="divider-custom-line"></div>
+      </div>
+  
+      <!-- Token Request Section Form-->
+      <div class="row justify-content-center">
+        <div id="adhoc-provider" class="col-lg-8 col-xl-7">
+          <form (ngSubmit)="onSubmit()" #tokenRequestForm="ngForm">
+            <div class="form-floating mb-3">
+              <select class="form-select" id="protocol" required [(ngModel)]="model.protocol" name="protocol" #protocol="ngModel">
+                <option *ngFor="let protocol of protocols" [value]="protocol">{{protocol}}</option>
+              </select>
+              <label for="protocol">Protocol</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" [class.is-invalid]="!(identifier.valid || identifier.pristine)" id="identifier" required [(ngModel)]="model.identifier" name="identifier" #identifier="ngModel" />
+              <label [hidden]="!(identifier.valid || identifier.pristine)" for="identifier">Identifier</label>
+              <label [hidden]="identifier.valid || identifier.pristine" for="identifier">Identifier is required</label>
+            </div>
+            <div class="form-floating mb-3" [hidden]="protocol.value!=='Open ID'">
+              <input type="text" class="form-control" [class.is-invalid]="!(scope.valid || scope.pristine)" id="scope" [required]="protocol.value==='Open ID'" [(ngModel)]="model.scope" name="scope" #scope="ngModel" />
+              <label [hidden]="!(scope.valid || scope.pristine)" for="scope">Scope</label>
+              <label [hidden]="scope.valid || scope.pristine" for="scope">Scope is required</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" [class.is-invalid]="!(loginUrl.valid || loginUrl.pristine)" id="loginUrl" required [(ngModel)]="model.loginUrl" name="loginUrl" #loginUrl="ngModel" />
+              <label [hidden]="!(loginUrl.valid || loginUrl.pristine)" for="loginUrl">Login Url</label>
+              <label [hidden]="loginUrl.valid || loginUrl.pristine" for="loginUrl">Login Url is required</label>
+            </div>
+            <div class="form-floating mb-3" [hidden]="protocol.value!=='Open ID'">
+              <input type="text" class="form-control" [class.is-invalid]="!(tokenUrl.valid || tokenUrl.pristine)" id="tokenUrl" [required]="protocol.value==='Open ID'" [(ngModel)]="model.tokenUrl" name="tokenUrl" #tokenUrl="ngModel" />
+              <label [hidden]="!(tokenUrl.valid || tokenUrl.pristine)" for="tokenUrl">Token Url</label>
+              <label [hidden]="tokenUrl.valid || tokenUrl.pristine" for="tokenUrl">Token Url is required</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-xl" [disabled]="!tokenRequestForm.form.valid">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  
