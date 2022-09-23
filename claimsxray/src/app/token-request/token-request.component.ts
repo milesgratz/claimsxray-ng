@@ -6,6 +6,7 @@ import { deflateRaw } from 'pako';
 import { Utilities } from '../utilities'
 import { TokenRequest } from '../models/token-request';
 import { TokenParserService } from '../services/token-parser.service';
+import { CxraySessionService } from '../services/cxray-session.service';
 
 @Component({
   selector: 'app-token-request',
@@ -16,7 +17,10 @@ export class TokenRequestComponent implements OnInit {
   model: TokenRequest = new TokenRequest();
   submitted = false;
 
-  constructor(private tokenParserService: TokenParserService){ }
+  constructor(
+    private tokenParserService: TokenParserService,
+    private cxraySessionService: CxraySessionService
+  ){ }
 
   ngOnInit() {
     this.model = this.tokenParserService.getTokenRequest();
@@ -24,7 +28,11 @@ export class TokenRequestComponent implements OnInit {
   }
 
   onSubmit() {
-    //this.submitted = true;
+    //enable session
+    if (this.model.sessionDuration > 0)
+      this.cxraySessionService.enable(this.model.sessionDuration);
+    else
+      this.cxraySessionService.end();
 
     // clear cache used for PKCE
     this.tokenParserService.removeTokenRequest();

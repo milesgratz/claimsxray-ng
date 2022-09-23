@@ -39,6 +39,11 @@
               <label [hidden]="!(tokenUrl.valid || tokenUrl.pristine)" for="tokenUrl">Token Url</label>
               <label [hidden]="tokenUrl.valid || tokenUrl.pristine" for="tokenUrl">Token Url is required</label>
             </div>
+            <div class="form-floating mb-3">
+              <input type="number" class="form-control" [class.is-invalid]="!(sessionDuration.valid || sessionDuration.pristine)" id="sessionDuration" [(ngModel)]="model.sessionDuration" name="sessionDuration" #sessionDuration="ngModel" />
+              <label [hidden]="!(sessionDuration.valid || sessionDuration.pristine)" for="sessionDuration">Session duration (minutes)</label>
+              <label [hidden]="sessionDuration.valid || sessionDuration.pristine" for="sessionDuration">Invalid session duration</label>
+            </div>
             <button type="submit" class="btn btn-primary btn-xl" [disabled]="!tokenRequestForm.form.valid">Login</button>
           </form>
         </div>

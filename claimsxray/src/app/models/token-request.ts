@@ -8,6 +8,7 @@ export class TokenRequest {
     replyHost: string;
     replyHostProxy: string;
     replyPath: string;
+    sessionDuration: number;
   
     constructor() {
       this.protocol = '';
@@ -19,6 +20,7 @@ export class TokenRequest {
       this.replyHost = '';
       this.replyHostProxy = '';
       this.replyPath = '';
+      this.sessionDuration = 0;
     }
   }
   

@@ -3,8 +3,9 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 import { ParsedToken } from '../models/parsed-token';
 import { TokenType } from '../models/app-enums';
-import { TokenParserService } from '../services/token-parser.service';
 import { TokenRequest } from '../models/token-request';
+import { TokenParserService } from '../services/token-parser.service';
+import { CxraySessionService } from '../services/cxray-session.service';
 
 @Component({
   selector: 'app-token',
@@ -18,7 +19,8 @@ export class TokenComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private tokenParserService: TokenParserService
+    private tokenParserService: TokenParserService,
+    private cxraySessionService: CxraySessionService
   ) { }
 
   ngOnInit() {
@@ -47,6 +49,10 @@ export class TokenComponent implements OnInit {
     });
 
     this.tokens = this.tokenParserService.tokens;
+    // start session if enabled
+    if (this.cxraySessionService.isEnabled())
+      this.cxraySessionService.start(this.tokens);
+
     console.log(this.tokens);
   }
 
