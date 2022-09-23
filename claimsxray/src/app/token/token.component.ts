@@ -13,7 +13,7 @@ import { CxraySessionService } from '../services/cxray-session.service';
   styleUrls: ['./token.component.css']
 })
 export class TokenComponent implements OnInit {
-
+  hasSession = false;
   tokens: ParsedToken[] = [];
   tokenRequest: TokenRequest = new TokenRequest();
 
@@ -24,36 +24,42 @@ export class TokenComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      // check for SAML response
-      if (params['samlResponse']) {
-        this.tokenParserService.addRawToken(TokenType.Saml, params['samlResponse']);
-      }
-      // check for WS-Fed response
-      if (params['wresult']) {
-        this.tokenParserService.addRawToken(TokenType.WsFed, params['wresult']);
-      }
-    });
 
-    this.route.fragment.subscribe(fragment => {
-      // check for OIDC response
-      if (fragment) {
-        //console.log(fragment);
-        const urlParams = new URLSearchParams(fragment);
-        const code = urlParams.get('code')
-        if (code) {
-          this.tokenRequest = this.tokenParserService.getTokenRequest();
-          this.getOidcTokens(code);
+    if (this.cxraySessionService.isStarted()) {
+      this.tokens = this.cxraySessionService.getDetails().tokens;
+      this.hasSession = this.cxraySessionService.isStarted();
+    }
+    else {
+      this.route.queryParams.subscribe(params => {
+        // check for SAML response
+        if (params['samlResponse']) {
+          this.tokenParserService.addRawToken(TokenType.Saml, params['samlResponse']);
         }
+        // check for WS-Fed response
+        if (params['wresult']) {
+          this.tokenParserService.addRawToken(TokenType.WsFed, params['wresult']);
+        }
+      });
+  
+      this.route.fragment.subscribe(fragment => {
+        // check for OIDC response
+        if (fragment) {
+          //console.log(fragment);
+          const urlParams = new URLSearchParams(fragment);
+          const code = urlParams.get('code')
+          if (code) {
+            this.tokenRequest = this.tokenParserService.getTokenRequest();
+            this.getOidcTokens(code);
+          }
+        }
+      });
+  
+      this.tokens = this.tokenParserService.tokens;
+      // start session if enabled
+      if (this.cxraySessionService.isEnabled())
+        this.cxraySessionService.start(this.tokens);  
+        //console.log(this.tokens);
       }
-    });
-
-    this.tokens = this.tokenParserService.tokens;
-    // start session if enabled
-    if (this.cxraySessionService.isEnabled())
-      this.cxraySessionService.start(this.tokens);
-
-    console.log(this.tokens);
   }
 
   getOidcTokens(code: string) {

@@ -12,51 +12,59 @@ import { ParsedToken } from '../models/parsed-token';
 export class CxraySessionService {
 
   private CXRAY_SESSION = 'CXRAY_SESSION';
+  private session = new CxraySession();
 
-  constructor() { }
-
-  getDetails(): CxraySession {
+  constructor() {
     //inflate cookie
     let text = localStorage.getItem(this.CXRAY_SESSION);
     if (text) {
       let data = Uint8Array.from([...text].map(letter => letter.charCodeAt(0)));
       let session = inflateRaw( data,  { to: 'string' });
 
-      return JSON.parse(session);
-    }
-    else
-      return new CxraySession();
+      this.session = JSON.parse(session);
+    }    
+  }
+
+  getDetails(): CxraySession {
+    return this.session;
   }
 
   enable(duration:number) {
-    let session = new CxraySession();
-    session.id = uuidv4()
+    this.session.id = uuidv4();
+    this.session.duration = duration;
 
     // deflate cookie content
-    let data = String.fromCharCode(...deflateRaw(JSON.stringify(session)));
+    let data = String.fromCharCode(...deflateRaw(JSON.stringify(this.session)));
     localStorage.setItem(this.CXRAY_SESSION, data);
   }
 
   isEnabled(): boolean {
-    if (localStorage.getItem(this.CXRAY_SESSION))
-      return true;
-    
-    return false;
+    return this.session.id != '';
   }
 
   start(tokens: ParsedToken[]) {
-    let session = this.getDetails();    
-    if (session) {
-      session.start = new Date();
-      session.tokens =tokens;
+    if (this.isEnabled()) {
+      this.session.start = new Date();
+      this.session.tokens =tokens;
     }
 
     // deflate cookie content
-    let data = String.fromCharCode(...deflateRaw(JSON.stringify(session)));
+    let data = String.fromCharCode(...deflateRaw(JSON.stringify(this.session)));
     localStorage.setItem(this.CXRAY_SESSION, data);
   }
 
+  isStarted(): boolean {
+    return this.session.tokens.length > 0;
+  }
+
+  isExpired(): boolean {
+    console.log(this.session.start);
+    let expire = new Date(this.session.start).getTime() + this.session.duration * 60000;
+    return (new Date(expire) <= new Date());
+  }
+
   end() {
+    this.session = new CxraySession();
     localStorage.removeItem(this.CXRAY_SESSION);
   }
 }

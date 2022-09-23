@@ -13,6 +13,7 @@ import { CopyrightComponent } from './copyright/copyright.component';
 import { AboutComponent } from './about/about.component';
 import { TokenRequestComponent } from './token-request/token-request.component';
 import { TokenComponent } from './token/token.component';
+import { SessionComponent } from './session/session.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { TokenComponent } from './token/token.component';
     CopyrightComponent,
     AboutComponent,
     TokenRequestComponent,
-    TokenComponent
+    TokenComponent,
+    SessionComponent
   ],
   imports: [
     BrowserModule,

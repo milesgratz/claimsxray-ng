@@ -1,0 +1,34 @@
+<section class="page-section" id="session">
+    <div class="container">
+      <!-- Session Section Heading-->
+      <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Session details</h2>
+      <!-- Icon Divider-->
+      <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="divider-custom-icon"><i class="fas fa-skull"></i></div>
+        <div class="divider-custom-line"></div>
+      </div>
+
+      <!-- Token Request Section Form-->
+      <div class="container text-center">
+
+        <div class="token-details">
+            <div class="card">
+                <h3 class="card-header" [style.color]="isExpired ? 'red' : null">{{isExpired ? 'Session Expired' : 'Information'}}</h3>
+                <div class="card-body">
+                    <h5 class="card-title">ID</h5>
+                    <p class="card-text">{{session.id}}</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Start</h5>
+                    <p class="card-text">{{session.start}}</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Duration</h5>
+                    <p class="card-text">{{session.duration}} minutes</p>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</section>
