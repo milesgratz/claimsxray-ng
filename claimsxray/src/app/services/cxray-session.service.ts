@@ -5,6 +5,7 @@ import { inflateRaw, deflateRaw } from 'pako';
 
 import { CxraySession } from '../models/cxay-session';
 import { ParsedToken } from '../models/parsed-token';
+import { Token } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -58,9 +59,12 @@ export class CxraySessionService {
   }
 
   isExpired(): boolean {
-    console.log(this.session.start);
-    let expire = new Date(this.session.start).getTime() + this.session.duration * 60000;
-    return (new Date(expire) <= new Date());
+    if (this.isStarted()) {
+      let expire = new Date(this.session.start).getTime() + this.session.duration * 60000;
+      return (new Date(expire) <= new Date());
+    }
+    else
+      return true;
   }
 
   end() {

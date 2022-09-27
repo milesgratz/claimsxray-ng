@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { CxraySessionService } from '../services/cxray-session.service';
+
 @Component({
   selector: 'app-nav-menu',
   templateUrl: './nav-menu.component.html',
@@ -8,10 +10,12 @@ import { Component, OnInit } from '@angular/core';
 export class NavMenuComponent implements OnInit {
 
   isExpanded = false;
+  showLogoff = false;
 
-  constructor() { }
+  constructor(private cxraySessionService: CxraySessionService) { }
 
   ngOnInit(): void {
+    this.showLogoff = this.cxraySessionService.isStarted();
   }
 
   collapse() {
@@ -20,6 +24,11 @@ export class NavMenuComponent implements OnInit {
 
   toggle() {
     this.isExpanded = !this.isExpanded;
+  }
+
+  logoff() {
+    this.cxraySessionService.end();
+    this.showLogoff = this.cxraySessionService.isStarted();
   }
 
 }

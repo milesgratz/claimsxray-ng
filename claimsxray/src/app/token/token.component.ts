@@ -39,6 +39,8 @@ export class TokenComponent implements OnInit {
         if (params['wresult']) {
           this.tokenParserService.addRawToken(TokenType.WsFed, params['wresult']);
         }
+
+        this.startSession(this.tokenParserService.tokens);
       });
   
       this.route.fragment.subscribe(fragment => {
@@ -53,13 +55,15 @@ export class TokenComponent implements OnInit {
           }
         }
       });
-  
-      this.tokens = this.tokenParserService.tokens;
+    }
+  }
+
+  startSession(tokens: ParsedToken[]) {
+    this.tokens = tokens;
       // start session if enabled
       if (this.cxraySessionService.isEnabled())
-        this.cxraySessionService.start(this.tokens);  
+        this.cxraySessionService.start(tokens);  
         //console.log(this.tokens);
-      }
   }
 
   getOidcTokens(code: string) {
@@ -90,6 +94,8 @@ export class TokenComponent implements OnInit {
           this.tokenParserService.addRawToken(TokenType.Id, data.id_token)
         if (data.access_token)
           this.tokenParserService.addRawToken(TokenType.Access, data.access_token)
+        
+        this.startSession(this.tokenParserService.tokens);
       })
       .catch(error => {
         console.log('Error: ');
