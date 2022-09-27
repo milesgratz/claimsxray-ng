@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap, Route } from '@angular/router';
 
 import { ParsedToken } from '../models/parsed-token';
 import { TokenType } from '../models/app-enums';
@@ -13,21 +13,20 @@ import { CxraySessionService } from '../services/cxray-session.service';
   styleUrls: ['./token.component.css']
 })
 export class TokenComponent implements OnInit {
-  hasSession = false;
   tokens: ParsedToken[] = [];
   tokenRequest: TokenRequest = new TokenRequest();
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private tokenParserService: TokenParserService,
     private cxraySessionService: CxraySessionService
   ) { }
 
   ngOnInit() {
-
-    if (this.cxraySessionService.isStarted()) {
-      this.hasSession = this.cxraySessionService.isStarted();
-      this.tokens = this.cxraySessionService.getDetails().tokens;
+    let session = this.cxraySessionService.getDetails();
+    if (session.tokens.length > 0) {
+      this.tokens = session.tokens;
     }
     else {
       this.route.queryParams.subscribe(params => {
@@ -59,12 +58,14 @@ export class TokenComponent implements OnInit {
   }
 
   startSession(tokens: ParsedToken[]) {
+    // start session if enabled
+    if (this.cxraySessionService.isEnabled()) {
+      this.cxraySessionService.start(this.tokenParserService.getTokenRequest(), tokens);  
+      //this.router.navigateByUrl('/', {skipLocationChange: false}).then(()=> this.router.navigate(['/']));
+      this.router.navigate(['/'])
+    }
+
     this.tokens = tokens;
-      // start session if enabled
-      if (this.cxraySessionService.isEnabled()) {
-        this.cxraySessionService.start(this.tokenParserService.getTokenRequest(), tokens);  
-        this.hasSession = true;
-      }
   }
 
   getOidcTokens(code: string) {

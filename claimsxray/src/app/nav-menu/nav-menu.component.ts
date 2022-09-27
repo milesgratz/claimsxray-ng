@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs/internal/Subject';
+import { takeUntil } from 'rxjs/operators';
 
 import { CxraySessionService } from '../services/cxray-session.service';
 
@@ -7,7 +9,9 @@ import { CxraySessionService } from '../services/cxray-session.service';
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })
-export class NavMenuComponent implements OnInit {
+export class NavMenuComponent implements OnInit, OnDestroy {
+
+  unsubscribe$: Subject<boolean> = new Subject();
 
   isExpanded = false;
   hasSession = false;
@@ -17,10 +21,19 @@ export class NavMenuComponent implements OnInit {
   constructor(private cxraySessionService: CxraySessionService) { }
 
   ngOnInit(): void {
-    this.hasSession = this.cxraySessionService.isStarted();
-    let tokens = this.cxraySessionService.getDetails().tokens;
-    this.hasToken = tokens.length > 0;
-    this.hasAccessToken = tokens.length > 1;
+    // subscription
+    this.cxraySessionService.started
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(state => {
+        this.hasSession = state.started;
+        this.hasToken = state.token;
+        this.hasAccessToken = state.accessToken;
+      });
+  }
+
+  ngOnDestroy(): void{
+    this.unsubscribe$.next(true);
+    this.unsubscribe$.complete();
   }
 
   collapse() {
@@ -33,7 +46,6 @@ export class NavMenuComponent implements OnInit {
 
   logoff() {
     this.cxraySessionService.end();
-    this.hasSession = this.cxraySessionService.isStarted();
+    //this.hasSession = this.cxraySessionService.isStarted();
   }
-
 }
