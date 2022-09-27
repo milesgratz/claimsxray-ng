@@ -5,7 +5,7 @@ import { inflateRaw, deflateRaw } from 'pako';
 
 import { CxraySession } from '../models/cxay-session';
 import { ParsedToken } from '../models/parsed-token';
-import { Token } from '@angular/compiler';
+import { TokenRequest } from '../models/token-request';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +31,9 @@ export class CxraySessionService {
   }
 
   enable(duration:number) {
-    this.session.id = uuidv4();
+    let id = this.session.id == '' ? uuidv4() : this.session.id;
+    this.session = new CxraySession();
+    this.session.id = id;
     this.session.duration = duration;
 
     // deflate cookie content
@@ -43,9 +45,10 @@ export class CxraySessionService {
     return this.session.id != '';
   }
 
-  start(tokens: ParsedToken[]) {
+  start(request:TokenRequest, tokens: ParsedToken[]) {
     if (this.isEnabled()) {
       this.session.start = new Date();
+      this.session.request =request;
       this.session.tokens =tokens;
     }
 

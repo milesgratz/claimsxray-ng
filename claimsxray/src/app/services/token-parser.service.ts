@@ -17,8 +17,8 @@ export class TokenParserService {
   replyHostProxy: string = '';
 
   constructor() {
-    this.replyHost = `${window.location.origin}/`;
-    this.replyHostProxy = 'http://localhost:7071/';
+    this.replyHost = `${window.location.origin}/token`;
+    this.replyHostProxy = 'http://localhost:7071/api/sso';
   }
 
   addRawToken(type: TokenType, token: string) {
@@ -146,8 +146,8 @@ export class TokenParserService {
       return JSON.parse(request);
 
     let empty = new TokenRequest();
-    empty.replyHost = this.replyHost;
-    empty.replyHostProxy = this.replyHostProxy;
+    //empty.replyHost = this.replyHost;
+    //empty.replyHostProxy = this.replyHostProxy;
     return empty;
   }
   setTokenRequest(request: TokenRequest) {

@@ -62,7 +62,7 @@ export class TokenComponent implements OnInit {
     this.tokens = tokens;
       // start session if enabled
       if (this.cxraySessionService.isEnabled())
-        this.cxraySessionService.start(tokens);  
+        this.cxraySessionService.start(this.tokenParserService.getTokenRequest(), tokens);  
         //console.log(this.tokens);
   }
 
@@ -72,12 +72,12 @@ export class TokenComponent implements OnInit {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Origin': this.tokenRequest.replyHost
+          'Origin': this.tokenParserService.replyHost
         },
         body: new URLSearchParams({
           'client_id': this.tokenRequest.identifier,
           'code_verifier': this.tokenRequest.codeVerifier,
-          'redirect_uri': this.tokenRequest.replyHost + this.tokenRequest.replyPath,
+          'redirect_uri': this.tokenParserService.replyHost,
           'grant_type': 'authorization_code',
           'code': code
         })
@@ -100,9 +100,6 @@ export class TokenComponent implements OnInit {
       .catch(error => {
         console.log('Error: ');
         console.log(error);
-      })
-      .finally(() => {
-        this.tokenParserService.removeTokenRequest();
       });
     }
 }
