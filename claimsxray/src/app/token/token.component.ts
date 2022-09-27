@@ -26,8 +26,8 @@ export class TokenComponent implements OnInit {
   ngOnInit() {
 
     if (this.cxraySessionService.isStarted()) {
-      this.tokens = this.cxraySessionService.getDetails().tokens;
       this.hasSession = this.cxraySessionService.isStarted();
+      this.tokens = this.cxraySessionService.getDetails().tokens;
     }
     else {
       this.route.queryParams.subscribe(params => {
@@ -61,9 +61,10 @@ export class TokenComponent implements OnInit {
   startSession(tokens: ParsedToken[]) {
     this.tokens = tokens;
       // start session if enabled
-      if (this.cxraySessionService.isEnabled())
+      if (this.cxraySessionService.isEnabled()) {
         this.cxraySessionService.start(this.tokenParserService.getTokenRequest(), tokens);  
-        //console.log(this.tokens);
+        this.hasSession = true;
+      }
   }
 
   getOidcTokens(code: string) {
