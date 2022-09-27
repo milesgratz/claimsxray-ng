@@ -10,12 +10,17 @@ import { CxraySessionService } from '../services/cxray-session.service';
 export class NavMenuComponent implements OnInit {
 
   isExpanded = false;
-  showLogoff = false;
+  hasSession = false;
+  hasToken = false;
+  hasAccessToken = false;
 
   constructor(private cxraySessionService: CxraySessionService) { }
 
   ngOnInit(): void {
-    this.showLogoff = this.cxraySessionService.isStarted();
+    this.hasSession = this.cxraySessionService.isStarted();
+    let tokens = this.cxraySessionService.getDetails().tokens;
+    this.hasToken = tokens.length > 0;
+    this.hasAccessToken = tokens.length > 1;
   }
 
   collapse() {
@@ -28,7 +33,7 @@ export class NavMenuComponent implements OnInit {
 
   logoff() {
     this.cxraySessionService.end();
-    this.showLogoff = this.cxraySessionService.isStarted();
+    this.hasSession = this.cxraySessionService.isStarted();
   }
 
 }

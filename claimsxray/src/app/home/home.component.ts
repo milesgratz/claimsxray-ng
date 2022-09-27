@@ -9,12 +9,10 @@ import { CxraySessionService } from '../services/cxray-session.service';
 })
 export class HomeComponent {
   hasSession = false;
-  expiredSession = true;
 
   constructor(private cxraySessionService: CxraySessionService){ }
 
   ngOnInit() {
     this.hasSession = this.cxraySessionService.isStarted();
-    this.expiredSession = this.cxraySessionService.isExpired();
   }
 }
