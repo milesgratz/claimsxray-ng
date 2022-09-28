@@ -1,4 +1,42 @@
+import { v4 as uuidv4 } from 'uuid';
+import { deflateRaw } from 'pako';
+
 export class Utilities {
+
+  static createSamlRequest(identifier:string, proxy: string):string {
+    let id = `id${uuidv4().replace('_','')}`;
+    let instant = new Date().toISOString(); //"2013-03-18T03:28:54.1839884Z"
+    //let samlXml = `<samlp:AuthnRequest xmlns="urn:oasis:names:tc:SAML:2.0:metadata" ID="${id}" Version="2.0" IssueInstant="${instant}" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"><Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">${this.model.identifier}</Issuer></samlp:AuthnRequest>`;
+    let samlXml = `<samlp:AuthnRequest xmlns="urn:oasis:names:tc:SAML:2.0:metadata" ID="${id}" Version="2.0" IssueInstant="${instant}" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" AssertionConsumerServiceURL="${proxy}"><Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">${identifier}</Issuer></samlp:AuthnRequest>`;
+
+    // https://jgraph.github.io/drawio-tools/tools/convert.html
+    let data = String.fromCharCode.apply(null, Array.from(deflateRaw(samlXml)));
+    data = btoa(data);
+
+    //return `${this.model.loginUrl}?SAMLRequest=${encodeURIComponent(data) }`;
+    return encodeURIComponent(data);
+  }
+
+  static createWsFedRequest(identifier:string, proxy: string):string {
+    //return `${this.model.loginUrl}?client-request-id=${uuidv4()}&wa=wsignin1.0&wtrealm=${identifier}&wreply=${reply}`;
+    return `client-request-id=${uuidv4()}&wa=wsignin1.0&wtrealm=${identifier}&wreply=${proxy}`;
+  }
+
+  static async createAuthCodeRequest(clientid:string, scope:string, reply: string):Promise<{verifier: string, data: string}> {
+    let state = Utilities.getRandomInt(10000, 99999);
+
+    // craft auth code request
+    let oidcRequest = `client_id=${clientid}&response_type=code&redirect_uri=${reply}&response_mode=fragment&scope=${scope}&state=${state}`;
+    // add PKCE
+    let codeChallengeMethod = 'S256';
+    let codeVerifier = Utilities.base64UrlEncode(Utilities.pkceCodeVerifier());
+    let codeChallenge = Utilities.base64UrlEncode(await Utilities.pkceCodeChallenge(codeVerifier));
+    oidcRequest += `&code_challenge=${codeChallenge}&code_challenge_method=${codeChallengeMethod}`;
+
+    //console.log(codeVerifier);
+    return {verifier: codeVerifier, data: oidcRequest};
+  }
+
   
   static getRandomInt(min: number, max: number) {
     min = Math.ceil(min);

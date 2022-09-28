@@ -5,9 +5,10 @@ export class TokenRequest {
     loginUrl: string;
     tokenUrl: string;
     codeVerifier: string;
-    replyHost: string;
-    replyHostProxy: string;
-    replyPath: string;
+    //replyHost: string;
+    //replyHostProxy: string;
+    //replyPath: string;
+    sessionDuration: number;
   
     constructor() {
       this.protocol = '';
@@ -16,9 +17,10 @@ export class TokenRequest {
       this.loginUrl = '';
       this.tokenUrl = '';
       this.codeVerifier = '';
-      this.replyHost = '';
-      this.replyHostProxy = '';
-      this.replyPath = '';
+      //this.replyHost = '';
+      //this.replyHostProxy = '';
+      //this.replyPath = '';
+      this.sessionDuration = 0;
     }
   }
   

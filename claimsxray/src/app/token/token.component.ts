@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap, Route } from '@angular/router';
 
 import { ParsedToken } from '../models/parsed-token';
 import { TokenType } from '../models/app-enums';
-import { TokenParserService } from '../services/token-parser.service';
 import { TokenRequest } from '../models/token-request';
+import { TokenParserService } from '../services/token-parser.service';
+import { CxraySessionService } from '../services/cxray-session.service';
 
 @Component({
   selector: 'app-token',
@@ -12,42 +13,59 @@ import { TokenRequest } from '../models/token-request';
   styleUrls: ['./token.component.css']
 })
 export class TokenComponent implements OnInit {
-
   tokens: ParsedToken[] = [];
   tokenRequest: TokenRequest = new TokenRequest();
 
   constructor(
     private route: ActivatedRoute,
-    private tokenParserService: TokenParserService
+    private router: Router,
+    private tokenParserService: TokenParserService,
+    private cxraySessionService: CxraySessionService
   ) { }
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      // check for SAML response
-      if (params['samlResponse']) {
-        this.tokenParserService.addRawToken(TokenType.Saml, params['samlResponse']);
-      }
-      // check for WS-Fed response
-      if (params['wresult']) {
-        this.tokenParserService.addRawToken(TokenType.WsFed, params['wresult']);
-      }
-    });
-
-    this.route.fragment.subscribe(fragment => {
-      // check for OIDC response
-      if (fragment) {
-        //console.log(fragment);
-        const urlParams = new URLSearchParams(fragment);
-        const code = urlParams.get('code')
-        if (code) {
-          this.tokenRequest = this.tokenParserService.getTokenRequest();
-          this.getOidcTokens(code);
+    let session = this.cxraySessionService.getDetails();
+    if (session.tokens.length > 0) {
+      this.tokens = session.tokens;
+    }
+    else {
+      this.route.queryParams.subscribe(params => {
+        // check for SAML response
+        if (params['samlResponse']) {
+          this.tokenParserService.addRawToken(TokenType.Saml, params['samlResponse']);
         }
-      }
-    });
+        // check for WS-Fed response
+        if (params['wresult']) {
+          this.tokenParserService.addRawToken(TokenType.WsFed, params['wresult']);
+        }
 
-    this.tokens = this.tokenParserService.tokens;
-    console.log(this.tokens);
+        this.startSession(this.tokenParserService.tokens);
+      });
+  
+      this.route.fragment.subscribe(fragment => {
+        // check for OIDC response
+        if (fragment) {
+          //console.log(fragment);
+          const urlParams = new URLSearchParams(fragment);
+          const code = urlParams.get('code')
+          if (code) {
+            this.tokenRequest = this.tokenParserService.getTokenRequest();
+            this.getOidcTokens(code);
+          }
+        }
+      });
+    }
+  }
+
+  startSession(tokens: ParsedToken[]) {
+    // start session if enabled
+    if (this.cxraySessionService.isEnabled()) {
+      this.cxraySessionService.start(this.tokenParserService.getTokenRequest(), tokens);  
+      //this.router.navigateByUrl('/', {skipLocationChange: false}).then(()=> this.router.navigate(['/']));
+      this.router.navigate(['/'])
+    }
+
+    this.tokens = tokens;
   }
 
   getOidcTokens(code: string) {
@@ -56,12 +74,12 @@ export class TokenComponent implements OnInit {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Origin': this.tokenRequest.replyHost
+          'Origin': this.tokenParserService.replyHost
         },
         body: new URLSearchParams({
           'client_id': this.tokenRequest.identifier,
           'code_verifier': this.tokenRequest.codeVerifier,
-          'redirect_uri': this.tokenRequest.replyHost + this.tokenRequest.replyPath,
+          'redirect_uri': this.tokenParserService.replyHost,
           'grant_type': 'authorization_code',
           'code': code
         })
@@ -78,13 +96,12 @@ export class TokenComponent implements OnInit {
           this.tokenParserService.addRawToken(TokenType.Id, data.id_token)
         if (data.access_token)
           this.tokenParserService.addRawToken(TokenType.Access, data.access_token)
+        
+        this.startSession(this.tokenParserService.tokens);
       })
       .catch(error => {
         console.log('Error: ');
         console.log(error);
-      })
-      .finally(() => {
-        this.tokenParserService.removeTokenRequest();
       });
     }
 }
