@@ -1,4 +1,5 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 import * as xml2js from 'xml2js';
 import { TokenType } from '../models/app-enums';
@@ -18,7 +19,10 @@ export class TokenParserService {
 
   constructor() {
     this.replyHost = `${window.location.origin}/token`;
-    this.replyHostProxy = 'http://localhost:7071/api/sso';
+    if (isDevMode())
+      this.replyHostProxy = `${environment.samlProxyUrl}/api/sso`;
+    else
+      this.replyHostProxy = `${window.location.origin}/api/sso`;
   }
 
   addRawToken(type: TokenType, token: string) {

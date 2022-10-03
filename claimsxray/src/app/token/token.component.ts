@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap, Route } from '@angular/router';
 
+import { inflateRaw } from 'pako';
+
 import { ParsedToken } from '../models/parsed-token';
 import { TokenType } from '../models/app-enums';
 import { TokenRequest } from '../models/token-request';
 import { TokenParserService } from '../services/token-parser.service';
 import { CxraySessionService } from '../services/cxray-session.service';
+import { Utilities } from '../utilities';
 
 @Component({
   selector: 'app-token',
@@ -47,6 +50,25 @@ export class TokenComponent implements OnInit {
         if (fragment) {
           //console.log(fragment);
           const urlParams = new URLSearchParams(fragment);
+          // check for SAML response
+          const saml = urlParams.get('samlResponse')
+          if (saml) {
+            let data = Utilities.base64UrlDecode(saml);
+            let token = inflateRaw(data, { to: 'string' });
+            this.tokenParserService.addRawToken(TokenType.Saml, token);
+          
+            this.startSession(this.tokenParserService.tokens);
+          }
+          // check for WS-Fed response
+          const wsfed = urlParams.get('wresult')
+          if (wsfed) {
+            let data = Utilities.base64UrlDecode(wsfed);
+            let token = inflateRaw(data, { to: 'string' });
+            this.tokenParserService.addRawToken(TokenType.WsFed, token);
+
+            this.startSession(this.tokenParserService.tokens);
+          }
+ 
           const code = urlParams.get('code')
           if (code) {
             this.tokenRequest = this.tokenParserService.getTokenRequest();
