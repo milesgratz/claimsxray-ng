@@ -1,0 +1,4 @@
+User-agent: *
+allow: /
+
+Sitemap: https://claimsxray.net/sitemap.xml
