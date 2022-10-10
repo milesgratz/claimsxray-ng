@@ -1,13 +1,12 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
+import {localSettings} from './localsettings.environment';
 
 export const environment = {
   production: false,
   samlProxyUrl: 'http://localhost:7071',
-  appInsights: {
-    connectionString: 'YOUR_CONNECTION_STRING_GOES_HERE'
-  }
+  ...localSettings
 };
 
 /*

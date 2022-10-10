@@ -40,3 +40,6 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# local development settings, use 'localsettings-template.environment.ts' for reference
+localsettings.environment.ts

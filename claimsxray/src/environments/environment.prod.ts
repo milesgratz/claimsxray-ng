@@ -1,4 +1,7 @@
 export const environment = {
   production: true,
-  samlProxyUrl: ''
+  samlProxyUrl: '',
+  appInsights: {
+    connectionString: 'undefined'
+  }
 };
