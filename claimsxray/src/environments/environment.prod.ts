@@ -3,5 +3,7 @@ export const environment = {
   samlProxyUrl: '',
   appInsights: {
     connectionString: 'undefined'
-  }
+  },
+  name: 'claimsxray',
+  version: '0.0.0'
 };

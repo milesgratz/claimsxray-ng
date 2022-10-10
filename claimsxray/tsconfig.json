@@ -25,7 +25,9 @@
     "paths": {
       "timers": [ "node_modules/timers-browserify" ],
       "stream": [ "node_modules/stream-browserify" ]
-    }
+    },
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
