@@ -39,11 +39,11 @@ export class MonitoringService {
   }
 
   // expose methods that can be used in components and services
-  trackEvent(name: string): void {
-    this.appInsights.trackEvent({ name });
+  logEvent(name: string, properties?: object): void {
+    this.appInsights.trackEvent({ name, properties });
   }
 
-  trackTrace(message: string): void {
-      this.appInsights.trackTrace({ message });
+  trace(message: string, properties?: object): void {
+      this.appInsights.trackTrace({ message, properties });
   }
 }
