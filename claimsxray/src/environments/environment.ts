@@ -4,7 +4,10 @@
 
 export const environment = {
   production: false,
-  samlProxyUrl: 'http://localhost:7071'
+  samlProxyUrl: 'http://localhost:7071',
+  appInsights: {
+    connectionString: 'YOUR_CONNECTION_STRING_GOES_HERE'
+  }
 };
 
 /*

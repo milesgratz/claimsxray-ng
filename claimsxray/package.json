@@ -18,6 +18,8 @@
     "@angular/platform-browser": "^14.0.0",
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",
+    "@microsoft/applicationinsights-angularplugin-js": "^3.0.0",
+    "@microsoft/applicationinsights-web": "^2.8.8",
     "bootstrap": "^5.2.0",
     "pako": "^2.0.4",
     "rxjs": "~7.5.0",
