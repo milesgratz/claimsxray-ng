@@ -1,4 +1,9 @@
 export const environment = {
   production: true,
-  samlProxyUrl: ''
+  samlProxyUrl: '',
+  appInsights: {
+    connectionString: 'undefined'
+  },
+  name: 'claimsxray',
+  version: '0.0.0'
 };

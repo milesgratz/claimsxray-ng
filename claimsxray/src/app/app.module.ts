@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'
 import { RouterModule } from '@angular/router';
 
+import { MonitoringModule } from './monitoring.module';
+
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -14,6 +16,7 @@ import { AboutComponent } from './about/about.component';
 import { TokenRequestComponent } from './token-request/token-request.component';
 import { TokenComponent } from './token/token.component';
 import { SessionComponent } from './session/session.component';
+import { PrivacyComponent } from './privacy/privacy.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +29,8 @@ import { SessionComponent } from './session/session.component';
     AboutComponent,
     TokenRequestComponent,
     TokenComponent,
-    SessionComponent
+    SessionComponent,
+    PrivacyComponent
   ],
   imports: [
     BrowserModule,
@@ -35,7 +39,8 @@ import { SessionComponent } from './session/session.component';
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'token', component: TokenComponent }
-    ])
+    ]),
+    MonitoringModule
   ],
   bootstrap: [AppComponent]
 })

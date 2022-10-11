@@ -4,6 +4,7 @@ import { Utilities } from '../utilities'
 import { TokenRequest } from '../models/token-request';
 import { TokenParserService } from '../services/token-parser.service';
 import { CxraySessionService } from '../services/cxray-session.service';
+import { MonitoringService } from '../services/monitoring.service';
 
 @Component({
   selector: 'app-token-request',
@@ -16,7 +17,8 @@ export class TokenRequestComponent implements OnInit {
 
   constructor(
     private tokenParserService: TokenParserService,
-    private cxraySessionService: CxraySessionService
+    private cxraySessionService: CxraySessionService,
+    private monitoringService: MonitoringService
   ){ }
 
   ngOnInit() {
@@ -35,11 +37,16 @@ export class TokenRequestComponent implements OnInit {
     // update request cache
     this.tokenParserService.setTokenRequest(this.model);
 
-    if (this.model.protocol == 'SAML')
+    if (this.model.protocol == 'SAML') {
+      this.monitoringService.logEvent('LoginRequest', { protocol: 'SAML', loginUrl: this.model.loginUrl, isRefresh: false });
       window.location.href = `${this.model.loginUrl}?SAMLRequest=${Utilities.createSamlRequest(this.model.identifier, this.tokenParserService.replyHostProxy) }`;
-    else if (this.model.protocol == 'WS-Fed')
+    }
+    else if (this.model.protocol == 'WS-Fed') {
+      this.monitoringService.logEvent('LoginRequest', { protocol: 'WsFed', loginUrl: this.model.loginUrl, isRefresh: false });
       window.location.href = `${this.model.loginUrl}?${Utilities.createWsFedRequest(this.model.identifier, this.tokenParserService.replyHostProxy)}`;
-    else
+    }
+    else {
+      this.monitoringService.logEvent('LoginRequest', { protocol: 'OIDC', loginUrl: this.model.loginUrl, isRefresh: false });
       Utilities.createAuthCodeRequest(this.model.identifier, this.model.scope, this.tokenParserService.replyHost).then((request) => {
         // store paremters in token parser service for processing callback
         this.model.codeVerifier = request.verifier;
@@ -47,6 +54,7 @@ export class TokenRequestComponent implements OnInit {
         this.tokenParserService.setTokenRequest(this.model);
         window.location.href = `${this.model.loginUrl}?${request.data}`;
       });
+    }
   }
   createAuthCodeRequest() {
     throw new Error('Method not implemented.');

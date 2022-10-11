@@ -268,3 +268,12 @@ html {
     text-align: left;
     color: var(--bs-code-color);
   }
+
+  .privacy-modal .btn-close {
+    font-size: 2rem;
+    padding: 1rem;
+  }
+  .privacy-modal .privacy-modal-title {
+    font-size: 2.25rem;
+    line-height: 2rem;
+  }
