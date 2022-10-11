@@ -36,15 +36,15 @@ export class SessionComponent implements OnInit {
     this.cxraySessionService.enable(this.session.duration);
   
     if (tokenRequest.protocol == 'SAML') {
-      this.monitoringService.logEvent('LoginRequest', { protocol: 'SAML', identifier: tokenRequest.identifier, loginUrl: tokenRequest.loginUrl, isRefresh: true });
+      this.monitoringService.logEvent('LoginRequest', { protocol: 'SAML', loginUrl: tokenRequest.loginUrl, isRefresh: true });
       window.location.href = `${tokenRequest.loginUrl}?SAMLRequest=${Utilities.createSamlRequest(tokenRequest.identifier, this.tokenParserService.replyHostProxy) }`;
     }
     else if (tokenRequest.protocol == 'WS-Fed') {
-      this.monitoringService.logEvent('LoginRequest', { protocol: 'WsFed', identifier: tokenRequest.identifier, loginUrl: tokenRequest.loginUrl, isRefresh: true });
+      this.monitoringService.logEvent('LoginRequest', { protocol: 'WsFed', loginUrl: tokenRequest.loginUrl, isRefresh: true });
       window.location.href = `${tokenRequest.loginUrl}?${Utilities.createWsFedRequest(tokenRequest.identifier, this.tokenParserService.replyHostProxy)}`;
     }
     else {
-      this.monitoringService.logEvent('LoginRequest', { protocol: 'OIDC', identifier: tokenRequest.identifier, loginUrl: tokenRequest.loginUrl, isRefresh: true });
+      this.monitoringService.logEvent('LoginRequest', { protocol: 'OIDC', loginUrl: tokenRequest.loginUrl, isRefresh: true });
       Utilities.createAuthCodeRequest(tokenRequest.identifier, tokenRequest.scope, this.tokenParserService.replyHost).then((request) => {
         // store paremters in token parser service for processing callback
         tokenRequest.codeVerifier = request.verifier;
