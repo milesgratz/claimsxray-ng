@@ -16,6 +16,7 @@ import { AboutComponent } from './about/about.component';
 import { TokenRequestComponent } from './token-request/token-request.component';
 import { TokenComponent } from './token/token.component';
 import { SessionComponent } from './session/session.component';
+import { PrivacyComponent } from './privacy/privacy.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { SessionComponent } from './session/session.component';
     AboutComponent,
     TokenRequestComponent,
     TokenComponent,
-    SessionComponent
+    SessionComponent,
+    PrivacyComponent
   ],
   imports: [
     BrowserModule,
