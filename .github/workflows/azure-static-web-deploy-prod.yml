@@ -1,6 +1,7 @@
 name: C-Xray production Azure Static Web Apps CI/CD
 
 on:
+  release:
   workflow_dispatch:
 
 jobs:
