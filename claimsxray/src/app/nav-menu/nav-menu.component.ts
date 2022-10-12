@@ -13,7 +13,6 @@ export class NavMenuComponent implements OnInit, OnDestroy {
 
   unsubscribe$: Subject<boolean> = new Subject();
 
-  isExpanded = false;
   hasSession = false;
   hasToken = false;
   hasAccessToken = false;
@@ -34,14 +33,6 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void{
     this.unsubscribe$.next(true);
     this.unsubscribe$.complete();
-  }
-
-  collapse() {
-    this.isExpanded = false;
-  }
-
-  toggle() {
-    this.isExpanded = !this.isExpanded;
   }
 
   logoff() {
