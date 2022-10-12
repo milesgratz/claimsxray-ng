@@ -12,6 +12,7 @@
       <!-- Token Request Section Form-->
       <div class="row justify-content-center">
         <div id="adhoc-provider" class="col-lg-8 col-xl-7">
+          <h4 class="text-center text-secondary mb-3">Configure your app reply URL - {{protocol.value!='Open ID' ? replyUrlSaml : replyUrlOidc}}</h4>
           <form (ngSubmit)="onSubmit()" #tokenRequestForm="ngForm">
             <div class="form-floating mb-3">
               <select class="form-select" id="protocol" required [(ngModel)]="model.protocol" name="protocol" #protocol="ngModel">
@@ -21,7 +22,7 @@
             </div>
             <div class="form-floating mb-3">
               <input type="text" class="form-control" [class.is-invalid]="!(identifier.valid || identifier.pristine)" id="identifier" required [(ngModel)]="model.identifier" name="identifier" #identifier="ngModel" />
-              <label [hidden]="!(identifier.valid || identifier.pristine)" for="identifier">Identifier</label>
+              <label [hidden]="!(identifier.valid || identifier.pristine)" for="identifier">{{protocol.value!='Open ID' ? 'Identifier' : 'Client ID'}}</label>
               <label [hidden]="identifier.valid || identifier.pristine" for="identifier">Identifier is required</label>
             </div>
             <div class="form-floating mb-3" [hidden]="protocol.value!=='Open ID'">
@@ -31,7 +32,7 @@
             </div>
             <div class="form-floating mb-3">
               <input type="text" class="form-control" [class.is-invalid]="!(loginUrl.valid || loginUrl.pristine)" id="loginUrl" required [(ngModel)]="model.loginUrl" name="loginUrl" #loginUrl="ngModel" />
-              <label [hidden]="!(loginUrl.valid || loginUrl.pristine)" for="loginUrl">Login Url</label>
+              <label [hidden]="!(loginUrl.valid || loginUrl.pristine)" for="loginUrl">{{protocol.value!='Open ID' ? 'Login' : 'Authorization'}} Url</label>
               <label [hidden]="loginUrl.valid || loginUrl.pristine" for="loginUrl">Login Url is required</label>
             </div>
             <div class="form-floating mb-3" [hidden]="protocol.value!=='Open ID'">
