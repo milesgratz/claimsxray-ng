@@ -27,6 +27,6 @@ Performance and analytics: Azure Application Insights is used to collect usage d
 
 Claim X-Ray joined [Inclusiveness Analyzer] efforts to push out exclusive terms and make inclusive terms a part of our everyday vocabulary! 
 
-Help us confront these biases and configure [Inclusiveness Analyzer] Action on your repositories too!
+Help us confront unconscious and implicit biases we hold and configure [Inclusiveness Analyzer] Action on your repositories too!
 
 [Inclusiveness Analyzer]: https://github.com/marketplace/actions/inclusiveness-analyzer
