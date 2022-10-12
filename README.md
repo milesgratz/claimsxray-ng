@@ -1,4 +1,5 @@
 # Claims X-Ray
+
 Claims X-Ray is a free tool created to test Identity Provider application configuration before deploying to production, it is also very helpful to simulate and test application migration scenarios. Set the parameters as for standard federated applications and it will take care of the protocol negotiations. Check the token details and evaluate if the Identity Provider sent the expected results.
 
 
@@ -20,3 +21,12 @@ Front End: Angular based Single Page Application that performs all token parsing
 SAML Proxy: C# based Azure Function that receives SAML/WS-Fed tokens from the identity providers, it deflates the response and sends the encoded response to the *Front End* as URL fragment (#).
 
 Performance and analytics: Azure Application Insights is used to collect usage data for performance and statistics. 
+
+
+## Inclusiveness Analyzer
+
+Claim X-Ray joined [Inclusiveness Analyzer] efforts to push out exclusive terms and make inclusive terms a part of our everyday vocabulary! 
+
+Help us confront these biases and configure [Inclusiveness Analyzer] Action on your repositories too!
+
+[Inclusiveness Analyzer]: https://github.com/marketplace/actions/inclusiveness-analyzer
