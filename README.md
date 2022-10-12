@@ -16,6 +16,8 @@ Select one of the supported protocols (SAML 2.0, WS-Fed, Open ID Connect / OAuth
 
 ## Architecture
 
+A short description of the application components:
+
 Front End: Angular based Single Page Application that performs all token parsing. 
 
 SAML Proxy: C# based Azure Function that receives SAML/WS-Fed tokens from the identity providers, it deflates the response and sends the encoded response to the *Front End* as URL fragment (#).
