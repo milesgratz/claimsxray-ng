@@ -96,7 +96,7 @@ export class TokenComponent implements OnInit {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          //'Origin': this.tokenParserService.replyHost
+          'Origin': this.tokenParserService.replyHost
         },
         body: new URLSearchParams({
           'client_id': this.tokenRequest.identifier,
