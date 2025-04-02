@@ -1,4 +1,4 @@
-name: C-Xray staging Azure Static Web Apps CI/CD
+name: C-Xray Azure Static Web Apps CI/CD
 
 on:
   push:
@@ -32,7 +32,6 @@ jobs:
           api_location: "saml-proxy-function" # Api source code path relative to repository root - optional
           output_location: "dist/claimsxray" # Built app content directory, relative to app_location - optional
           ###### End of Repository/Build Configurations ######
-          deployment_environment: "staging"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
